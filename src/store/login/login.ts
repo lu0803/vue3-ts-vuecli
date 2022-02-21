@@ -15,7 +15,7 @@ const loginModule: Module<ILoginState, IRootState> = {
   mutations: {},
   actions: {
     accountLoginAction({ commit }, payload: any) {
-      console.log(payload)
+      console.log(commit, payload)
     }
   }
 }
