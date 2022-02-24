@@ -25,8 +25,8 @@ export default defineComponent({
   setup() {
     const store = useStore()
     const account = reactive({
-      name: null,
-      password: null
+      name: localCache.getCache('name'),
+      password: localCache.getCache('password')
     })
 
     const formRef = ref<InstanceType<typeof ElForm>>()

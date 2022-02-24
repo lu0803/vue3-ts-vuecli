@@ -46,9 +46,7 @@ class FoxRequest {
       (res) => {
         // 是否关闭loading
         if (this.isLoading) {
-          setTimeout(() => {
-            this.loading?.close()
-          }, 2000)
+          this.loading?.close()
         }
 
         // console.log('所有实例都有的拦截器：响应成功拦截')
