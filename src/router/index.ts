@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import localCache from '@/utils/cache'
-import store from '@/store'
 
 const routes: RouteRecordRaw[] = [
   {
