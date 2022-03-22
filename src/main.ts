@@ -4,17 +4,19 @@ import router from './router'
 import store from './store'
 import { setupStore } from './store'
 
-// import { registerApp } from './global'
+import { registerApp } from './global'
 import 'normalize.css'
 import '@/assets/style/base.css'
 
-import ElementPlus from 'element-plus'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import ElementPlus, { affixProps } from 'element-plus'
 import 'element-plus/dist/index.css'
 
 const app = createApp(App)
 
-app.use(ElementPlus)
-app.use(router)
+registerApp(app)
+app.use(ElementPlus, { locale: zhCn })
 app.use(store)
 setupStore()
+app.use(router)
 app.mount('#app')

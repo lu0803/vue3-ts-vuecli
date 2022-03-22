@@ -9,6 +9,7 @@ import {
 } from '@/service/login'
 import localCache from '@/utils/cache'
 import router from '@/router'
+import { mapMenusToRoutes } from '@/utils/mapMenu'
 
 const loginModule: Module<ILoginState, IRootState> = {
   namespaced: true,
@@ -29,25 +30,27 @@ const loginModule: Module<ILoginState, IRootState> = {
     },
     changeUserMenus(state, menus: any) {
       state.userMenus = menus
+      const routes = mapMenusToRoutes(menus)
+      routes.forEach((route) => {
+        router.addRoute('main', route)
+      })
     }
   },
   actions: {
     async accountLoginAction({ commit }, payload: any) {
       const loginResult = await accountLoginRequest(payload)
-      const { id, token } = loginResult.data.data
+      const { id, token } = loginResult.data
       commit('changeToken', token)
       localCache.setCache('token', token)
 
       const userResult = await requestUserInfoById(id)
-      const userInfo = userResult.data.data
+      const userInfo = userResult.data
       commit('changeUserInfo', userInfo)
       localCache.setCache('userInfo', userInfo)
-
       const userMenusResult = await requestUserMenusByRoleId(userInfo.id)
-      const userMenus = userMenusResult
-      commit('changeUserMenus', userMenus)
-      localCache.setCache('userMenus', userMenus)
-
+      const menus = userMenusResult.data
+      commit('changeUserMenus', menus)
+      localCache.setCache('userMenus', menus)
       router.push('/main')
     },
     loadLocalLogin({ commit }) {
@@ -59,7 +62,8 @@ const loginModule: Module<ILoginState, IRootState> = {
       if (userInfo) {
         commit('changeUserInfo', userInfo)
       }
-      const userMenus = localCache.getCache('userMenus')
+      const userMenusResult = localCache.getCache('userMenus')
+      const userMenus = userMenusResult
       if (userMenus) {
         commit('changeUserMenus', userMenus)
       }

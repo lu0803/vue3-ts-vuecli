@@ -1,7 +1,6 @@
-import { AxiosResponse } from 'axios'
-
 import foxRequest from '../index'
-import { IAccount, IDateType, ILoginResult } from './type'
+import { IAccount, ILoginResult } from './type'
+import { IDateType } from '../types'
 
 enum LoginAPI {
   AccountLogin = '/login',
@@ -10,20 +9,20 @@ enum LoginAPI {
 }
 
 export function accountLoginRequest(account: IAccount) {
-  return foxRequest.post<AxiosResponse<IDateType<ILoginResult>>>({
+  return foxRequest.post<IDateType<ILoginResult>>({
     url: LoginAPI.AccountLogin,
     data: account
   })
 }
 
 export function requestUserInfoById(id: number) {
-  return foxRequest.get<AxiosResponse>({
+  return foxRequest.get<IDateType>({
     url: LoginAPI.userInfo + `/${id}`
   })
 }
 
 export function requestUserMenusByRoleId(id: number) {
-  return foxRequest.get<AxiosResponse<IDateType>>({
+  return foxRequest.get<IDateType>({
     url: LoginAPI.UserMenus + id + '/menu'
   })
 }

@@ -40,13 +40,13 @@ import { ref } from 'vue'
 const isSavePassword = ref(true)
 const currentTab = ref('account')
 const accountRef = ref<InstanceType<typeof loginAccount>>()
-const phoneRef = ref<InstanceType<typeof loginPhone>>()
+// const phoneRef = ref<InstanceType<typeof loginPhone>>()
 
 const handlerLogin = () => {
   if (currentTab.value === 'account') {
     accountRef.value?.loginAction(isSavePassword.value)
   } else {
-    phoneRef.value?.loginAction(isSavePassword.value)
+    // phoneRef.value?.loginAction(isSavePassword.value)
   }
 }
 </script>

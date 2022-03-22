@@ -54,7 +54,7 @@ class FoxRequest {
         if (data.returnCode === '-1001') {
           console.log('请求失败~，错误信息')
         } else {
-          return res
+          return data
         }
       },
       (err) => {
@@ -86,19 +86,19 @@ class FoxRequest {
         })
     })
   }
-  get<T>(config: FoxRequestConfig): Promise<T> {
+  get<T = any>(config: FoxRequestConfig): Promise<T> {
     return this.request({ ...config, method: 'GET' })
   }
-  post<T>(config: FoxRequestConfig): Promise<T> {
+  post<T = any>(config: FoxRequestConfig): Promise<T> {
     return this.request({ ...config, method: 'POST' })
   }
-  delete<T>(config: FoxRequestConfig): Promise<T> {
+  delete<T = any>(config: FoxRequestConfig): Promise<T> {
     return this.request({ ...config, method: 'DELETE' })
   }
-  patch<T>(config: FoxRequestConfig): Promise<T> {
+  patch<T = any>(config: FoxRequestConfig): Promise<T> {
     return this.request({ ...config, method: 'PATCH' })
   }
-  put<T>(config: FoxRequestConfig): Promise<T> {
+  put<T = any>(config: FoxRequestConfig): Promise<T> {
     return this.request({ ...config, method: 'PUT' })
   }
 }
