@@ -9,7 +9,7 @@ import 'normalize.css'
 import '@/assets/style/base.css'
 
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
-import ElementPlus, { affixProps } from 'element-plus'
+import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
 const app = createApp(App)
