@@ -89,9 +89,16 @@ const Props = defineProps({
 
 const formData = ref({ ...Props.modelValue })
 const Emits = defineEmits(['update:modelValue'])
-watch(formData, (newValue) => Emits('update:modelValue', newValue), {
-  deep: true
-})
+watch(
+  formData,
+  (newValue) => {
+    // console.log(newValue)
+    Emits('update:modelValue', newValue)
+  },
+  {
+    deep: true
+  }
+)
 </script>
 <style lang="less" scoped>
 .hy-form {
