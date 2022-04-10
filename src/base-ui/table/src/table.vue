@@ -8,7 +8,12 @@
         </div>
       </slot>
     </div>
-    <el-table :data="tableList" border @selection-change="selectionChange">
+    <el-table
+      :data="tableList"
+      border
+      @selection-change="selectionChange"
+      v-bind="childrenProps"
+    >
       <el-table-column
         v-if="showSelectColumn"
         type="selection"
@@ -26,6 +31,8 @@
         :prop="item.prop"
         :label="item.label"
         align="center"
+        :width="item.minWidth"
+        :show-overflow-tooltip="showOverflow"
       >
         <template #default="scoped">
           <slot :name="item.slotName" :row="scoped.row">
@@ -35,14 +42,25 @@
       </el-table-column>
     </el-table>
     <div class="footer">
-      <slot name="footer"></slot>
+      <slot name="footer">
+        <el-pagination
+          v-if="showFooter"
+          :currentPage="page.currentPage"
+          :page-size="page.pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="listCount"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </slot>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { defineProps, defineEmits } from 'vue'
 
-defineProps({
+const Props = defineProps({
   tableList: {
     type: Array,
     required: true
@@ -62,11 +80,34 @@ defineProps({
   title: {
     type: String,
     default: '信息详情'
+  },
+  page: {
+    type: Object,
+    default: () => ({ pageSize: 10, currentPage: 1 })
+  },
+  listCount: Number,
+  showFooter: {
+    type: Boolean,
+    default: true
+  },
+  childrenProps: {
+    type: Object,
+    default: () => ({})
+  },
+  showOverflow: {
+    type: Boolean,
+    default: false
   }
 })
-const Emits = defineEmits(['selectChange'])
+const Emits = defineEmits(['selectChange', 'update:page'])
 const selectionChange = (value: any) => {
   Emits('selectChange', value)
+}
+const handleSizeChange = (pageSize: number) => {
+  Emits('update:page', { ...Props.page, pageSize })
+}
+const handleCurrentChange = (currentPage: number) => {
+  Emits('update:page', { ...Props.page, currentPage })
 }
 </script>
 <style lang="less" scoped>

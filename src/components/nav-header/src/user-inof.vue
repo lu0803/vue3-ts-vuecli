@@ -37,7 +37,7 @@ const handlerLogOut = () => {
   console.log('退出登录')
 }
 </script>
-<style scoped lang="less">
+<style lang="less" scoped>
 .dropdown-control {
   display: flex;
   align-items: center;

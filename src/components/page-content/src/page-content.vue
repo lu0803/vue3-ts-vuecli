@@ -4,10 +4,14 @@
       style="width: 100%"
       v-bind="contentTableConfig"
       :tableList="userListData"
+      :listCount="listCount"
+      v-model:page="pageInfo"
     >
       <template #header-control>
-        <div>
-          <el-button type="primary">新建用户</el-button>
+        <div v-if="isCreate">
+          <el-button type="primary" @click="handlNewBtnClick"
+            >新建用户</el-button
+          >
         </div>
       </template>
       <template #status="scoped">
@@ -25,33 +29,46 @@
       <template #updateAt="scoped">
         {{ $filters.formatTime(scoped.row.updateAt) }}
       </template>
-      <template #handler>
-        <div class="handle-btns">
-          <el-button type="text" size="small">编辑</el-button>
-          <el-button type="text" size="small">删除</el-button>
-        </div>
+      <template
+        v-for="item in otherPropSlots"
+        :key="item.slotName"
+        #[item.slotName]="scoped"
+      >
+        <slot :name="item.slotName" :row="scoped.row"></slot>
       </template>
-      <template #footer>
-        <el-pagination
-          v-model:currentPage="currentPage4"
-          v-model:page-size="pageSize4"
-          :page-sizes="[100, 200, 300, 400]"
-          :small="small"
-          :disabled="disabled"
-          :background="background"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="400"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+      <template #handler="scoped">
+        <div class="handle-btns">
+          <el-button
+            type="text"
+            size="small"
+            v-if="isUpdate"
+            @click="handlEditBtnClick(scoped.row)"
+            >编辑</el-button
+          >
+          <el-button
+            type="text"
+            size="small"
+            v-if="isDelete"
+            @click="handlDeleteBtnClick"
+            >删除</el-button
+          >
+        </div>
       </template>
     </hy-table>
   </div>
 </template>
 <script lang="ts" setup>
-import { defineProps, computed } from 'vue'
+import {
+  ref,
+  computed,
+  watch,
+  defineProps,
+  defineEmits,
+  defineExpose
+} from 'vue'
 import { useStore } from 'vuex'
 import HyTable from '@/base-ui/table'
+import { usePermission } from '@/hooks/usePermission'
 
 const Props = defineProps({
   contentTableConfig: {
@@ -63,21 +80,68 @@ const Props = defineProps({
     required: true
   }
 })
+
+const Emits = defineEmits(['newBtnClick', 'editBtnClick'])
 const store = useStore()
-store.dispatch('system/getPageListAction', {
-  pageName: Props.pageName,
-  queryInfo: {
-    offset: 0,
-    size: 10
-  }
-})
+
+const isCreate = usePermission(Props.pageName, 'create')
+const isUpdate = usePermission(Props.pageName, 'update')
+const isDelete = usePermission(Props.pageName, 'delete')
+const isQuery = usePermission(Props.pageName, 'query')
+
+// 3. 页面分页
+const pageInfo = ref({ currentPage: 0, pageSize: 10 })
+// 1. 发送获取页面数据请求
+const getPageData = (info?: any) => {
+  if (!isQuery) return
+  store.dispatch('system/getPageListAction', {
+    pageName: Props.pageName,
+    queryInfo: {
+      offset: pageInfo.value.currentPage * pageInfo.value.pageSize,
+      size: pageInfo.value.pageSize,
+      ...info
+    }
+  })
+}
+getPageData()
+// 2. 获取页面数据
 const userListData = computed(() =>
   store.getters[`system/pageListData`](Props.pageName)
 )
+const listCount = computed(() =>
+  store.getters[`system/pageListTotal`](Props.pageName)
+)
+
+// 4. 获取其他的动态插槽
+const otherPropSlots = Props.contentTableConfig?.propList.filter(
+  (item: any) => {
+    if (item.slotName === 'status') return false
+    if (item.slotName === 'createAt') return false
+    if (item.slotName === 'updateAt') return false
+    if (item.slotName === 'handler') return false
+    return true
+  }
+)
+
+// 按钮事件
+const handlDeleteBtnClick = () => {
+  console.log('删除按钮')
+}
+const handlNewBtnClick = () => {
+  Emits('newBtnClick')
+}
+const handlEditBtnClick = (row: any) => {
+  Emits('editBtnClick', row)
+}
+
+watch(pageInfo, () => {
+  getPageData()
+})
+// 暴露组件属性/方法
+defineExpose({ getPageData })
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
 .page-content {
   padding: 20px;
-  border-top: 15px solid #f5f5f5;
 }
 </style>
