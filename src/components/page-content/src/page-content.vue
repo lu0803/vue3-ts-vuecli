@@ -49,7 +49,7 @@
             type="text"
             size="small"
             v-if="isDelete"
-            @click="handlDeleteBtnClick"
+            @click="handlDeleteBtnClick(scoped.row)"
             >删除</el-button
           >
         </div>
@@ -124,8 +124,11 @@ const otherPropSlots = Props.contentTableConfig?.propList.filter(
 )
 
 // 按钮事件
-const handlDeleteBtnClick = () => {
-  console.log('删除按钮')
+const handlDeleteBtnClick = (row: any) => {
+  store.dispatch('system/deletePageDataAction', {
+    pageName: Props.pageName,
+    id: row.id
+  })
 }
 const handlNewBtnClick = () => {
   Emits('newBtnClick')

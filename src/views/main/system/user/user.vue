@@ -14,8 +14,9 @@
     ></page-content>
     <page-modal
       ref="pageModelRef"
-      :modalConfig="modalConfig"
+      :modalConfig="modalConfigComputed"
       :defaultInfo="defaultInfo"
+      pageName="users"
     ></page-modal>
   </div>
 </template>
@@ -28,9 +29,45 @@ import { contentFormConfig } from './config/content.config'
 import { modalConfig } from './config/modal.config'
 import { usePageSearch } from '@/hooks/usePageSearch'
 import { usePageModal } from '@/hooks/usePageModal'
+import { computed, watch } from 'vue'
+import { useStore } from 'vuex'
+
+const store = useStore()
+
+const modalConfigComputed = computed(() => {
+  const departmentItem = modalConfig.formItems.find(
+    (item) => item.field === 'departmentId'
+  )
+
+  const roleItem = modalConfig.formItems.find((item) => item.field === 'roleId')
+
+  departmentItem!.options = store.state.entireDepartment.map((item: any) => {
+    return { label: item.name, value: item.id }
+  })
+  roleItem!.options = store.state.entireRole.map((item: any) => {
+    return { label: item.name, value: item.id }
+  })
+  return modalConfig
+})
+
 const [pageContentRef, handleResetClick, handleQeuryClick] = usePageSearch()
-const [pageModelRef, defaultInfo, handleNewData, handleEditData] =
-  usePageModal()
+
+const newCallback = () => {
+  const passwordItem = modalConfig.formItems.find(
+    (item) => item.field === 'password'
+  )
+  passwordItem!.isHidden = false
+}
+const editCallback = () => {
+  const passwordItem = modalConfig.formItems.find(
+    (item) => item.field === 'password'
+  )
+  passwordItem!.isHidden = true
+}
+const [pageModelRef, defaultInfo, handleNewData, handleEditData] = usePageModal(
+  newCallback,
+  editCallback
+)
 </script>
 <style lang="less" scoped>
 .user {
